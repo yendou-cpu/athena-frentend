@@ -154,7 +154,7 @@
     width: 100%;
     max-width: 520px;
     background: white;
-    padding: 42px;
+    padding: 0 42px 0 42px;
     height: auto;
     border-radius: 18px;
     border: 1px solid #e5e7eb;
