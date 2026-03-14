@@ -5,7 +5,7 @@
     let email        = "";
     let numerotel    = "";
     let password     = "";
-    let role         = "caissier";
+    let role         = "Admin";
 
     let message    = "";
     let erreur     = "";
@@ -84,7 +84,6 @@
                 <div class="field">
                     <label for="role">Rôle <span class="required">*</span></label>
                     <select id="role" bind:value={role}>
-                        <option value="caissier">Caissier</option>
                         <option value="proprietaire">Admin</option>
                     </select>
                 </div>
@@ -154,7 +153,7 @@
     width: 100%;
     max-width: 520px;
     background: white;
-    padding: 42px;
+    padding: 0 42px 0 42px;
     height: auto;
     border-radius: 18px;
     border: 1px solid #e5e7eb;

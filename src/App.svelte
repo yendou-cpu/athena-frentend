@@ -2,10 +2,13 @@
     import Accueil     from './components/accueil.svelte';
     import Inscription from './pages/inscription.svelte';
     import Connexion   from './pages/connexion.svelte';
+    import Landing     from './pages/landing.svelte';
     import Produits    from './components/produits.svelte';
     import Ventes      from './components/ventes.svelte';
     import Caissier    from './components/caissier.svelte';
     import Stock       from './components/stock.svelte';
+    import Rapports    from './components/rapports.svelte';
+    import Logs        from './components/logs.svelte';
 
     const token = localStorage.getItem("token");
     const user  = JSON.parse(localStorage.getItem("user") || "{}");
@@ -25,7 +28,7 @@
     }
 
     // Pages réservées aux admins
-    const pagesAdmin = ['#/acceuil', '#/produits', '#/ventes', '#/stock'];
+    const pagesAdmin = ['#/acceuil', '#/produits', '#/ventes', '#/stock', '#/rapports', '#/logs'];
 
     function getPage() {
         const hash = window.location.hash;
@@ -37,17 +40,20 @@
         // Pages admin protégées
         if (pagesAdmin.includes(hash)) {
             if (!tokenValide()) return 'connexion';
-            if (estCaissier())  return 'caissier'; //  caissier bloqué
+            if (estCaissier())  return 'caissier'; // ✅ caissier bloqué
             if (hash === '#/acceuil')  return 'accueil';
             if (hash === '#/produits') return 'produits';
             if (hash === '#/ventes')   return 'ventes';
-            if (hash === '#/stock')    return 'stock';  //  ajouté
+            if (hash === '#/stock')    return 'stock';
+            if (hash === '#/rapports') return 'rapports';
+            if (hash === '#/logs')     return 'logs';  // ✅ ajouté
         }
 
         // Page par défaut
-        if (!hash || hash === '#/' || hash === '#') {
-            if (!tokenValide()) return 'inscription';
-            return estCaissier() ? 'caissier' : 'ventes';
+        if (hash === '#/landing') return 'landing';
+    if (!hash || hash === '#/' || hash === '#') {
+            if (!tokenValide()) return 'landing'; // page d'accueil publique
+            return estCaissier() ? 'caissier' : 'accueil';
         }
 
         return 'inscription';
@@ -60,7 +66,9 @@
     });
 </script>
 
-{#if page === 'inscription'}
+{#if page === 'landing'}
+        <Landing />
+    {:else if page === 'inscription'}
     <Inscription />
 
 {:else if page === 'connexion'}
@@ -80,5 +88,9 @@
 
 {:else if page === 'stock'}
     <Stock />
+{:else if page === 'rapports'}
+    <Rapports />
+{:else if page === 'logs'}
+    <Logs />
 
 {/if}
