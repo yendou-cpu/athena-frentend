@@ -9,88 +9,84 @@
     import Stock       from './components/stock.svelte';
     import Rapports    from './components/rapports.svelte';
     import Logs        from './components/logs.svelte';
+    import Parametres  from './components/parametres.svelte';
 
-    const token = localStorage.getItem("token");
-    const user  = JSON.parse(localStorage.getItem("user") || "{}");
+    let page = 'landing';
 
-    function tokenValide() {
-        if (!token) return false;
-        try {
-            const payload = JSON.parse(atob(token.split('.')[1]));
-            return payload.exp * 1000 > Date.now();
-        } catch {
-            return false;
-        }
-    }
+    function checkAuth() {
+        // Relire localStorage à chaque appel (sinon token null après login)
+        const token = localStorage.getItem("token");
+        const user  = JSON.parse(localStorage.getItem("user") || "{}");
 
-    function estCaissier() {
-        return user?.role === "caissier";
-    }
+        const isTokenValide = () => {
+            if (!token) return false;
+            try {
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                return payload.exp * 1000 > Date.now();
+            } catch { return false; }
+        };
 
-    // Pages réservées aux admins
-    const pagesAdmin = ['#/acceuil', '#/produits', '#/ventes', '#/stock', '#/rapports', '#/logs'];
+        const estCaissier = (user?.role || "").toLowerCase() === "caissier";
 
-    function getPage() {
-        const hash = window.location.hash;
+        // Normaliser le hash : "" et "#" → "#/"
+        const hash = window.location.hash || '#/';
 
+        // 1. Pages publiques (pas besoin de token)
         if (hash === '#/inscription') return 'inscription';
+        if (hash === '#/landing')     return 'landing';
         if (hash === '#/connexion')   return 'connexion';
-        if (hash === '#/caissier')    return 'caissier';
 
-        // Pages admin protégées
-        if (pagesAdmin.includes(hash)) {
-            if (!tokenValide()) return 'connexion';
-            if (estCaissier())  return 'caissier'; // ✅ caissier bloqué
-            if (hash === '#/acceuil')  return 'accueil';
-            if (hash === '#/produits') return 'produits';
-            if (hash === '#/ventes')   return 'ventes';
-            if (hash === '#/stock')    return 'stock';
-            if (hash === '#/rapports') return 'rapports';
-            if (hash === '#/logs')     return 'logs';  // ✅ ajouté
+        // 2. Hash vide ou racine → landing si non connecté, accueil sinon
+        if (hash === '#/' || hash === '#') {
+            if (!isTokenValide()) return 'landing';
+            return estCaissier ? 'caissier' : 'accueil';
         }
 
-        // Page par défaut
-        if (hash === '#/landing') return 'landing';
-    if (!hash || hash === '#/' || hash === '#') {
-            if (!tokenValide()) return 'landing'; // page d'accueil publique
-            return estCaissier() ? 'caissier' : 'accueil';
-        }
+        // 3. Toutes les autres pages nécessitent un token valide
+        if (!isTokenValide()) return 'landing';
 
-        return 'inscription';
+        // 4. Caissier forcé sur sa page
+        if (estCaissier) return 'caissier';
+
+        // 5. Pages admin/propriétaire
+        if (hash === '#/acceuil')    return 'accueil';
+        if (hash === '#/produits')   return 'produits';
+        if (hash === '#/ventes')     return 'ventes';
+        if (hash === '#/stock')      return 'stock';
+        if (hash === '#/rapports')   return 'rapports';
+        if (hash === '#/logs')       return 'logs';
+        if (hash === '#/parametres') return 'parametres';
+        if (hash === '#/caissier')   return 'caissier';
+
+        return 'landing';
     }
 
-    let page = getPage();
+    const updatePage = () => { page = checkAuth(); };
 
-    window.addEventListener('hashchange', () => {
-        page = getPage();
-    });
+    window.addEventListener('hashchange', updatePage);
+    updatePage(); // initialisation
 </script>
 
 {#if page === 'landing'}
-        <Landing />
-    {:else if page === 'inscription'}
+    <Landing />
+{:else if page === 'inscription'}
     <Inscription />
-
 {:else if page === 'connexion'}
     <Connexion />
-
 {:else if page === 'accueil'}
     <Accueil />
-
 {:else if page === 'produits'}
     <Produits />
-
 {:else if page === 'ventes'}
     <Ventes />
-
 {:else if page === 'caissier'}
     <Caissier />
-
 {:else if page === 'stock'}
     <Stock />
 {:else if page === 'rapports'}
     <Rapports />
 {:else if page === 'logs'}
     <Logs />
-
+{:else if page === 'parametres'}
+    <Parametres />
 {/if}

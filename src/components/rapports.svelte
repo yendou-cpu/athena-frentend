@@ -17,7 +17,6 @@
     function toggleMenu()    { menuVisible = !menuVisible; }
     function toggleSidebar() { sidebarOpen = !sidebarOpen; }
     function logout() {
-        menuVisible = false;
         localStorage.removeItem("token");
         localStorage.removeItem("user");
         window.location.href = "#/connexion";
@@ -552,7 +551,7 @@
 .bar-wrap { flex:1; width:100%; display:flex; align-items:flex-end; }
 .bar { width:100%; background:linear-gradient(180deg,#60a5fa,#2563eb); border-radius:5px 5px 0 0; min-height:4px; position:relative; cursor:pointer; transition:height 0.4s cubic-bezier(.4,0,.2,1); }
 .bar:hover { background:linear-gradient(180deg,#93c5fd,#1d4ed8); }
-.bar-tooltip { display:none; position:absolute; bottom:calc(100%+6px); left:50%; transform:translateX(-50%); background:#0f172a; color:#fff; font-size:0.63rem; font-weight:600; padding:0.28rem 0.5rem; border-radius:6px; white-space:nowrap; pointer-events:none; z-index:10; }
+.bar-tooltip { display:none; position:absolute; bottom:calc(100% + 6px); left:50%; transform:translateX(-50%); background:#0f172a; color:#fff; font-size:0.63rem; font-weight:600; padding:0.28rem 0.5rem; border-radius:6px; white-space:nowrap; pointer-events:none; z-index:10; }
 .bar:hover .bar-tooltip { display:block; }
 .bar-label { font-size:0.62rem; color:#94a3b8; font-weight:500; }
 

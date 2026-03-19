@@ -23,16 +23,23 @@ async function login() {
             if (!response.ok) {
                 erreur = data.message || "Email ou mot de passe incorrect.";
             } else {
+                // 1. Stockage immédiat
                 localStorage.setItem("token", data.token);
                 localStorage.setItem("user", JSON.stringify(data.user));
-                message = "Connexion réussie ! Redirection...";
-                setTimeout(() => window.location.href = '#/acceuil', 2000);
+                
+                message = "Connexion réussie !";
+
+                // 2. Redirection plus rapide (500ms au lieu de 2000ms pour laisser lire le message)
+                // Si vous utilisez un routeur, remplacez par : push('/accueil')
+                setTimeout(() => {
+                    window.location.assign('#/acceuil'); 
+                }, 500);
             }
         } else {
             erreur = "Veuillez remplir tous les champs.";
         }
     } catch (e) {
-        erreur = "Impossible de contacter le serveur.";
+        erreur = "Impossible de contacter le serveur. Vérifiez votre connexion.";
     } finally {
         chargement = false;
     }
